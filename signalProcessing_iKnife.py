@@ -20,27 +20,29 @@ for i in range(0, len(X)):
 	feat[i][0] = mean
 	feat[i][1] = fft_freq
 
-X_train, X_test, Y_train, Y_test = train_test_split(feat, Y, test_size=0.2, random_state=42)
 
-print(np.shape(X_train))
+
+X_training, X_test, Y_train, Y_test = train_test_split(feat, Y, test_size=0.2, random_state=42)
+print(np.shape(X_training[:,0]))
 print(np.shape(Y_train))
+
 '''
 SVM#1 Mean  vs. FFT
 '''
 
 C = 1.0
-svc = svm.SVC(kernel = 'linear', C=1.0).fit(X_train, Y_train)
-lin_svc = svm.LinearSVC(C=1.0).fit(X_train, Y_train)
-rbf_svc = svm.SVC(kernel = 'rbf', gamma = 0.7, C=1.0).fit(X_train, Y_train)
-poly_svc = svm.SVC(kernel = 'poly', degree = 3, C = 1.0).fit(X_train, Y_train)
+svc = svm.SVC(kernel = 'linear', C=1.0).fit(X_training, Y_train)
+lin_svc = svm.LinearSVC(C=1.0).fit(X_training, Y_train)
+rbf_svc = svm.SVC(kernel = 'rbf', gamma = 0.7, C=1.0).fit(X_training, Y_train)
+poly_svc = svm.SVC(kernel = 'poly', degree = 3, C = 1.0).fit(X_training, Y_train)
 
 
 h = .02  # step size in the mesh
  
 # create a mesh to plot in
 
-X_train_min, X_train_max = X_train[0].min() - 1, X_train[0].max() + 1
-Y_train_min, Y_train_max = X_train[1].min() - 1, X_train[1].max() + 1
+X_train_min, X_train_max = X_training[:,0].min() - 1, X_training[:,0].max() + 1
+Y_train_min, Y_train_max = X_training[:,1].min() - 1, X_training[:,1].max() + 1
 X_train, yy = np.meshgrid(np.arange(X_train_min, X_train_max, h),
 	                     np.arange(Y_train_min, Y_train_max, h))
 # title for the plots
@@ -63,7 +65,7 @@ for i, clf in enumerate((svc, lin_svc, rbf_svc, poly_svc)):
 	 plt.contourf(X_train, yy, Z, cmap=plt.cm.coolwarm, alpha=0.8)
  
 	 # Plot also the training points
-	 plt.scatter(X_train[0], X_train[1], c=Y_train, cmap=plt.cm.coolwarm)
+	 plt.scatter(X_training[:,0], X_training[:,1], c = Y_train, cmap=plt.cm.coolwarm)
 	 plt.xlabel('Mean')
 	 plt.ylabel('FFT')
 	 plt.xlim(X_train.min(), X_train.max())
@@ -75,5 +77,4 @@ for i, clf in enumerate((svc, lin_svc, rbf_svc, poly_svc)):
 plt.show()
 
 Y_pred = svc.predict(X_test)
-print("Pred", Y_pred)
 print("Accuracy", metrics.accuracy_score(Y_test, Y_pred))
