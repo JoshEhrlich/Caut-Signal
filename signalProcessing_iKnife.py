@@ -26,10 +26,10 @@ for i in range(0, len(X)):
 
 X_training, X_test, Y_train, Y_test = train_test_split(feat, Y, test_size=0.2, random_state=42)
 
-plt.xlabel("Mean")
-plt.ylabel("Fourier Transform Frequency")
-plt.scatter(feat[:,0], feat[:,1])
-plt.show()
+# plt.xlabel("Mean")
+# plt.ylabel("Fourier Transform Frequency")
+# plt.scatter(feat[:,0], feat[:,1])
+# plt.show()
 
 '''
 SVM#1 Mean  vs. FFT
@@ -82,3 +82,15 @@ for i, clf in enumerate((svc, lin_svc, rbf_svc, poly_svc)):
 
 Y_pred = svc.predict(X_test)
 print("Accuracy", metrics.accuracy_score(Y_test, Y_pred))
+
+# Compute ROC curve and ROC area for each class
+fpr = dict()
+tpr = dict()
+roc_auc = dict()
+for i in range(0,3):
+    fpr[i], tpr[i], _ = roc_curve(Y_pred[i], Y_test[i])
+    roc_auc[i] = auc(fpr[i], tpr[i])
+
+# Compute micro-average ROC curve and ROC area
+fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score.ravel())
+roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
