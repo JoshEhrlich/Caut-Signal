@@ -7,9 +7,13 @@ import random
 from sklearn import metrics
 from scipy.fftpack import fft
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import plot_roc_curve
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.metrics import roc_curve, auc
+from sklearn import svm, datasets
 
-X = np.load("x2.npy")
-Y = np.load("y2.npy")
+X = np.load("x.npy")
+Y = np.load("y.npy")
 
 feat = np.empty([1000,2])
 
@@ -20,11 +24,12 @@ for i in range(0, len(X)):
 	feat[i][0] = mean
 	feat[i][1] = fft_freq
 
-
-
 X_training, X_test, Y_train, Y_test = train_test_split(feat, Y, test_size=0.2, random_state=42)
-print(np.shape(X_training[:,0]))
-print(np.shape(Y_train))
+
+plt.xlabel("Mean")
+plt.ylabel("Fourier Transform Frequency")
+plt.scatter(feat[:,0], feat[:,1])
+plt.show()
 
 '''
 SVM#1 Mean  vs. FFT
@@ -35,7 +40,6 @@ svc = svm.SVC(kernel = 'linear', C=1.0).fit(X_training, Y_train)
 lin_svc = svm.LinearSVC(C=1.0).fit(X_training, Y_train)
 rbf_svc = svm.SVC(kernel = 'rbf', gamma = 0.7, C=1.0).fit(X_training, Y_train)
 poly_svc = svm.SVC(kernel = 'poly', degree = 3, C = 1.0).fit(X_training, Y_train)
-
 
 h = .02  # step size in the mesh
  
@@ -74,7 +78,7 @@ for i, clf in enumerate((svc, lin_svc, rbf_svc, poly_svc)):
 	 plt.yticks(())
 	 plt.title(titles[i])
  
-plt.show()
+# plt.show()
 
 Y_pred = svc.predict(X_test)
 print("Accuracy", metrics.accuracy_score(Y_test, Y_pred))
